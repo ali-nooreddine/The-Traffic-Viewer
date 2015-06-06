@@ -162,7 +162,7 @@ function onSignInCallback(authResult) {
                         
                         </td>
                         <td align="center" style="font-family: sans-serif;">
-                            <button id="reportRadar" style="margin-left: 900px;" onclick="div_show_report_radar()">Report Radar</button>
+                            <a href="reportradar.xhtml">   <button id="reportRadar" style="margin-left: 900px;">Report Radar</button></a>
                             <button id="popup" style="margin-left: 900px;" onclick="div_show()">Contact Us</button>
                         </td>
                     </tr>
@@ -223,45 +223,6 @@ function onSignInCallback(authResult) {
             </div>
             <!-- Popup Div Ends Here -->
             
-            <!-- Report a radar Popup Div Starts Here -->
-            <!-- Contact Us Form -->
-               <!--         <div id="report_radar" class="report_radar">
-                <div id="popupReportRadar">
-                    
-                    <h:form class="form" id="form" styleClass="form" >
-
-                        <img id="close" src="image/delete-icon_1.png" onclick ="div_hide_report_radar()"/>
-                        <h2>Contact Us</h2>
-                        <hr/>
-                        <label>Name: <span>*</span></label>
-                        <h:inputText styleClass="name" id="name" p:placeholder="Name" value="#{contactus.name}"
-                                     required="true" requiredMessage="Name is required"/><br/>
-                        <h:message id="mName" for="name" style="color: red"/><br/>
-                        <label>Email: <span>*</span></label>
-                        <h:inputText styleClass="email" id="email" p:placeholder="Email" value="#{contactus.eMail}"
-                                     required="true" requiredMessage="Email is required"
-                                     validatorMessage="Email is not valid">
-                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
-                        </h:inputText><br/>
-                        <h:message id="mEmail" for="email" style="color: red"/><br/>
-                        <label>Contact No: <span>*</span></label>
-                        <h:inputText styleClass="phone" id="contactno" p:placeholder="10 digit Mobile no." value="#{contactus.phNum}"
-                                     required="true" requiredMessage="Phone Number is required" >
-                        </h:inputText>
-                        <br/>
-                        <h:message id="mContact" for="contactno" style="color: red"/><br/>
-                        <label>Message:</label>
-                        <h:inputTextarea styleClass="textarea" id="message" p:placeholder="Message......."  value="#{contactus.msg}"
-                                         required="true" requiredMessage="Message is required"/><br/>
-                        <h:message id="mMessage" for="message" style="color: red"/>
-                        <h:commandButton styleClass="submit" id="send" value="Send" onclick="div_hide()" action="#{contactus.insert()}">
-                            <f:ajax event="click" execute="@form" render="@form" listener="#{contactus.insert()}"/>
-                        </h:commandButton>
-                    </h:form>
-                </div>
-            </div>-->
-
-            <!-- Report a radar popup Div Ends Here -->
 
             <div id="box">
                 <div id="control">      
@@ -442,4 +403,5 @@ function onSignInCallback(authResult) {
         <div id="map-canvas">         
         </div>
     </h:body>
+    
 </html>
