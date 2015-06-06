@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>Login to admin page</title>
+        <link rel= "stylesheet" type="text/css" href="style/adminloginStyle.css"></link>
+        <script language="javascript">
+function check()
+{
+var uid=document.getElementById("username").value;
+var pass=document.getElementById("password").value;
+if(uid=="")
+{
+alert("Please Enter Userid")
+return false;
+}
+if(pass=="")
+{
+alert(" Please Enter Password")
+return false;
+}
+}
+</script>
+        <script language="javascript">
+            $('#toggle-login').click(function(){
+            $('#login').toggle();
+            });
+        </script>
+    </h:head>
+    <h:body>
+    <span href="#" class="button" id="toggle-login">Log in</span>
+    <div id="login">
+
+      <div id="triangle"></div>
+<h1><h:outputText value="Log in" /></h1>
+<h:form id="f1" onsubmit="check()"> 
+
+         <h:inputText maxlength="255" size="20" tabindex="10" value="#{login.user}"
+                       styleClass="inputField" id="username" p:placeholder="Username"/>
+<br/>
+         <h:inputSecret maxlength="255" size="20" tabindex="20"
+                        value="#{login.password}" styleClass="inputField" id="password" p:placeholder="Password"/>
+
+
+          <h:commandButton id="login" value="Log in" action="#{login.Validate}" />
+         <h:messages/>
+      </h:form> 
+    </div>
+    </h:body>
+</html>
+

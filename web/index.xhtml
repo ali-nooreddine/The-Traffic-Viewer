@@ -1,0 +1,445 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>The Traffic Viewer</title>
+        <link rel= "stylesheet" type="text/css" href="style/style.css"></link>
+        <script type="text/javascript"
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkeB7j2rJP07nEOc0xOJpLiS1GjVFYZFs">
+        </script>
+        <script type="text/javascript" src="js/MapInitialization.js">
+        </script>
+        <link rel="stylesheet" href="style/jquery_popup.css" />
+        <script type="text/javascript" src="js/popupwindow.js"></script>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- jQuery for google plus API -->
+          <script type="text/javascript">
+  (function() {
+    var po = document.createElement('script');
+    po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://plus.google.com/js/client:plusone.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(po, s);
+  })();
+  
+function onSignInCallback(authResult) {
+    alert(authResult);
+  if (authResult['status']['signed_in']) {
+    // Update the app to reflect a signed in user
+    // Hide the sign-in button now that the user is authorized, for example:
+    document.getElementById('signinButton').setAttribute('style', 'display: none');
+  } else {
+    // Update the app to reflect a signed out user
+    // Possible error values:
+    //   "user_signed_out" - User is signed-out
+    //   "access_denied" - User denied access to your app
+    //   "immediate_failed" - Could not automatically log in the user
+    console.log('Sign-in state: ' + authResult['error']);
+  }
+}
+          
+          </script>
+        
+        <script>
+                    jQuery(document).ready(function() {
+                        jQuery('.tabs .tab-links a').on('click', function(e) {
+                            var currentAttrValue = jQuery(this).attr('href');
+                            // Show/Hide Tabs
+                            jQuery('.tabs ' + currentAttrValue).show().siblings().hide();
+                            // Change/remove current tab to active
+                            jQuery(this).parent('li').addClass('active').siblings().removeClass('active');
+                            e.preventDefault();
+                        });
+                    });
+        </script> 
+        <script>
+            $("#contactUs").click(function() {
+                $("#contactdiv").css("display", "block");
+            });</script>
+        <script type="text/javascript">
+            function show() {
+                document.getElementById("contactdiv").style.display = "block";
+            }</script>
+        <script type="text/javascript">
+            function hide() {
+                document.getElementById("contactdiv").style.display = "hidden";
+            }</script>
+    </h:head>
+
+    <script type="text/javascript">
+        var color = [];
+        var colorMorn = [];
+        var colorEven = [];
+        var jams = [];
+        var jamsMorn = [];
+        var jamsEven = [];
+        var radar = [];
+        var news = [];
+        var newsType = [];
+        var newsTitle = [];
+        var image = [];
+        var streetName = [];
+        var trafFull = [];
+        var noTraf = [];
+        var trafmid = [];
+        var traflow = [];
+    </script>
+
+    <c:forEach items="#{index.radarList}" var='radar'>
+        <script type="text/javascript">
+            radar.push("#{radar.location}");
+        </script>
+    </c:forEach>
+    <c:forEach items="#{index.newsList}" var='news'>
+        <script type="text/javascript">
+            news.push("#{news.location}");
+        </script>
+    </c:forEach>
+    <c:forEach items="#{index.newsList}" var='news_type'>
+        <script type="text/javascript">
+            newsType.push("#{news_type.typeId.type}");
+        </script>
+    </c:forEach>
+    <c:forEach items="#{index.newsList}" var='newsTitle'>
+        <script type="text/javascript">
+            newsTitle.push("#{newsTitle.title}");
+        </script>
+    </c:forEach>
+    <c:forEach items="#{index.newsList}" var='image'>
+        <script type="text/javascript">
+            image.push("#{image.image}");
+        </script>
+    </c:forEach>
+
+    <c:forEach items="#{index.jamsList}" var='trf'>
+        <script type="text/javascript">
+            trafFull.push(
+                    {
+                        id:#{trf.id},
+                        name: "#{trf.streetId.name}",
+                        location: "#{trf.location}",
+                        speed:#{trf.speed},
+                        sets: "#{trf.setsId.sets}",
+                        type: "#{trf.streetId.typeId.type}"
+                    }
+            );
+        </script>
+    </c:forEach>
+
+    <c:forEach items="#{index.jamsList}" var='trf1'>
+        <script type="text/javascript">
+            if ("#{trf1.setsId.sets}" === "morning") {
+                trafmid.push(
+                        {
+                            id:#{trf1.id},
+                            name: "#{trf1.streetId.name}",
+                            location: "#{trf1.location}",
+                            speed:#{trf1.speed},
+                            sets: "#{trf1.setsId.sets}",
+                            type: "#{trf1.streetId.typeId.type}"
+                        }
+                );
+            }
+        </script>
+    </c:forEach>
+
+    <!--when we change the traf value we should change the route info array value-->
+    <h:body onload="initialize();
+            setRadar(radar);
+            setNews(news, newsType, newsTitle, image)">
+
+        <div id="mainform">
+            <div>
+
+                <table id="menu-bar">
+                    <tr>
+                        <td align="center" style="font-family: sans-serif;"><a href="index.xhtml" title="The Traffic Viewer"></a>
+                        
+                        </td>
+                        <td align="center" style="font-family: sans-serif;">
+                            <button id="reportRadar" style="margin-left: 900px;" onclick="div_show_report_radar()">Report Radar</button>
+                            <button id="popup" style="margin-left: 900px;" onclick="div_show()">Contact Us</button>
+                        </td>
+                    </tr>
+
+                </table>
+<div id="gConnect">
+    <button id="signinButton" 
+        class="g-signin"
+        data-scope="https://www.googleapis.com/auth/plus.login"
+        data-requestvisibleactions="http://schemas.google.com/AddActivity"
+        data-clientId="935999459796-7ncorn3dt1bjdlir0q6bi6t9q1mc6m18.apps.googleusercontent.com"
+        data-accesstype="offline"
+        data-callback="onSignInCallback"
+        data-cookiepolicy="single_host_origin">
+    </button>
+  </div>
+   <div id="authOps" style="display:none">
+    <h2>Authentication Logs</h2>
+    <pre id="authResult"></pre>
+    <pre id="tokenResult"></pre>
+  </div>
+            </div>
+            <!-- Popup Div Starts Here -->
+            <div id="abc" class="abc">
+                <div id="popupContact">
+                    <!-- Contact Us Form -->
+                    <h:form class="form" id="form" styleClass="form" >
+
+                        <img id="close" src="image/delete-icon_1.png" onclick ="div_hide()"/>
+                        <h2>Contact Us</h2>
+                        <hr/>
+                        <label>Name: <span>*</span></label>
+                        <h:inputText styleClass="name" id="name" p:placeholder="Name" value="#{contactus.name}"
+                                     required="true" requiredMessage="Name is required"/><br/>
+                        <h:message id="mName" for="name" style="color: red"/><br/>
+                        <label>Email: <span>*</span></label>
+                        <h:inputText styleClass="email" id="email" p:placeholder="Email" value="#{contactus.eMail}"
+                                     required="true" requiredMessage="Email is required"
+                                     validatorMessage="Email is not valid">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                        </h:inputText><br/>
+                        <h:message id="mEmail" for="email" style="color: red"/><br/>
+                        <label>Contact No: <span>*</span></label>
+                        <h:inputText styleClass="phone" id="contactno" p:placeholder="10 digit Mobile no." value="#{contactus.phNum}"
+                                     required="true" requiredMessage="Phone Number is required" >
+                        </h:inputText>
+                        <br/>
+                        <h:message id="mContact" for="contactno" style="color: red"/><br/>
+                        <label>Message:</label>
+                        <h:inputTextarea styleClass="textarea" id="message" p:placeholder="Message......."  value="#{contactus.msg}"
+                                         required="true" requiredMessage="Message is required"/><br/>
+                        <h:message id="mMessage" for="message" style="color: red"/>
+                        <h:commandButton styleClass="submit" id="send" value="Send" onclick="div_hide()" action="#{contactus.insert()}">
+                            <f:ajax event="click" execute="@form" render="@form" listener="#{contactus.insert()}"/>
+                        </h:commandButton>
+                    </h:form>
+                </div>
+            </div>
+            <!-- Popup Div Ends Here -->
+            
+            <!-- Report a radar Popup Div Starts Here -->
+            <!-- Contact Us Form -->
+               <!--         <div id="report_radar" class="report_radar">
+                <div id="popupReportRadar">
+                    
+                    <h:form class="form" id="form" styleClass="form" >
+
+                        <img id="close" src="image/delete-icon_1.png" onclick ="div_hide_report_radar()"/>
+                        <h2>Contact Us</h2>
+                        <hr/>
+                        <label>Name: <span>*</span></label>
+                        <h:inputText styleClass="name" id="name" p:placeholder="Name" value="#{contactus.name}"
+                                     required="true" requiredMessage="Name is required"/><br/>
+                        <h:message id="mName" for="name" style="color: red"/><br/>
+                        <label>Email: <span>*</span></label>
+                        <h:inputText styleClass="email" id="email" p:placeholder="Email" value="#{contactus.eMail}"
+                                     required="true" requiredMessage="Email is required"
+                                     validatorMessage="Email is not valid">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                        </h:inputText><br/>
+                        <h:message id="mEmail" for="email" style="color: red"/><br/>
+                        <label>Contact No: <span>*</span></label>
+                        <h:inputText styleClass="phone" id="contactno" p:placeholder="10 digit Mobile no." value="#{contactus.phNum}"
+                                     required="true" requiredMessage="Phone Number is required" >
+                        </h:inputText>
+                        <br/>
+                        <h:message id="mContact" for="contactno" style="color: red"/><br/>
+                        <label>Message:</label>
+                        <h:inputTextarea styleClass="textarea" id="message" p:placeholder="Message......."  value="#{contactus.msg}"
+                                         required="true" requiredMessage="Message is required"/><br/>
+                        <h:message id="mMessage" for="message" style="color: red"/>
+                        <h:commandButton styleClass="submit" id="send" value="Send" onclick="div_hide()" action="#{contactus.insert()}">
+                            <f:ajax event="click" execute="@form" render="@form" listener="#{contactus.insert()}"/>
+                        </h:commandButton>
+                    </h:form>
+                </div>
+            </div>-->
+
+            <!-- Report a radar popup Div Ends Here -->
+
+            <div id="box">
+                <div id="control">      
+                    <b>Start: </b>
+                    <select id="start" onchange="calcRoute();">
+                        <option value="beirut">Beirut</option>
+                        <option value="Jall Al Dieb">Jall Al Dieb</option>
+                        <option value="Jdaide">Jdaide</option>
+                        <option value="Sin El Fil">Sin El Fil</option>
+                        <option value="Verdun, Beirut">verdun</option>
+                        <option value="Hamra, Bliss">Hamra, Bliss</option>
+                        <option value="Ghobeiry">Ghobeiry</option>
+                        <option value="chiyah">Chiyah</option>
+                        <option value="mkalles">mkalles</option>
+                        <option value="ouzai">ouzai</option>
+                        <option value="monot">monot</option>
+                        <option value="basta">basta</option>
+                        <option value="Borj Hammoud">Borj Hammoud</option>
+                        <option value="Borj Al Barajne">Borj Al Barajne</option>
+                        <option value="Haret Hraik">Haret Hraik</option>
+                        <option value="Furn Al Chebak">Furn Al Chebak</option>
+                    </select>
+                    <b>destination: </b>
+                    <select id="end" onchange="calcRoute();">
+                        <option value="beirut">Beirut</option>
+                        <option value="Jall Al Dieb">Jall Al Dieb</option>
+                        <option value="Jdaide">Jdaide</option>
+                        <option value="Sin El Fil">Sin El Fil</option>
+                        <option value="Verdun, Beirut">verdun</option>
+                        <option value="Hamra, Bliss">Hamra, Bliss</option>
+                        <option value="Ghobeiry">Ghobeiry</option>
+                        <option value="chiyah">Chiyah</option>
+                        <option value="mkalles">mkalles</option>
+                        <option value="ouzai">ouzai</option>
+                        <option value="monot">monot</option>
+                        <option value="basta">basta</option>
+                        <option value="Borj Hammoud">Borj Hammoud</option>
+                        <option value="Borj Al Barajne">Borj Al Barajne</option>
+                        <option value="Haret Hraik">Haret Hraik</option>
+                        <option value="Furn Al Chebak">Furn Al Chebak</option>
+                    </select>
+                </div>
+            </div>
+            <div style="float: left;">
+<!--                <div id="route-information">
+                </div>-->
+                <div style="overflow: hidden">
+                    <div class="tabs">
+                        <ul class="tab-links">
+                            <li class="active" id="Incident"><a onclick="reset();
+                            DrawPolyline(noTraf)">No traffic</a></li>
+                            <li  id='suggested-route' onclick=""><a onclick="reset();
+                            DrawPolyline(trafmid)">Low traffic</a></li>
+                            <li><a onclick="reset();
+                            DrawPolyline(trafFull)">Full traffic</a></li>
+                        </ul>
+                        <ul class="tab-links">
+                            <li class="active" id="Incident"><a href="#tab1">Incident</a></li>
+                            <li  id='suggested-route' onclick=""><a href="#tab2">Route Planner</a></li>
+                            <li><a href="#tab3">Radar list</a></li>
+                            <li><a href="#tab4">Legend</a></li>
+                        </ul>
+                       
+                        <div class="tab-content">
+                            <!--      Incident        -->
+                            <div id="tab1" class="tab active">
+                                <div><h4 style="background-color:#e0ffaf; font-family: sans-serif;" align="left"><img src="image/info.jpg"/>Traffic Event</h4></div>
+
+                                <h:dataTable value="#{index.newsList}" var="emp"  border="0" id="table" style="overflow: scroll;"> 
+                                    <h:column>  
+                                        <br/>
+                                        <a href="javascript:setMarkers('#{emp.title}','#{emp.image}','#{emp.location}','#{emp.typeId.type}');focusOnMarker('#{emp.location}')"> 
+                                            <script type="text/javascript">
+                                                var a = "#{emp.typeId.type}";
+                                                if (a === "Roadworks") {
+                                                    document.getElementById("icon").src = "image/CameraSpeed.jpg";
+                                                } else if (a === "Queuing traffic") {
+                                                    document.getElementById("icon").src = "image/queuingTraffic.png";
+                                                } else if (a === "Accident") {
+                                                    document.getElementById("icon").src = "image/CarAccidentIcon.jpg";
+                                                }
+                                            </script>
+                                            <b><h:outputText value="#{emp.title}" style="font-family:sans-serif;font-size:16px"/></b></a><br/>
+                                        <h:outputText value="#{emp.description}" style="font-family:sans-serif;font-size:12px;text-align: justify"/>
+                                    </h:column>
+                                </h:dataTable>
+                            </div>
+                            <!--        End of Incident-->
+                            <!--route-->
+                            <div id="tab2" style="display: none;">
+                                <h4 style="background-color:#e0ffaf; font-family: sans-serif;" align="left"><img src="image/route.jpg"/>routes:</h4>           
+                                <div id ="routing" style="visibility: hidden; position: absolute">
+                                    <div style='font-family: sans-serif;color:#3f3f3f;' align="center">
+                                        <a style="background-color:#b0b0b0; font-family: sans-serif; text-decoration:none; color: #4c4c4c; border: solid;"  href='javascript:CalReverseRoute();'>&nbsp; Reverse &nbsp;</a>
+                                        <a style="background-color:#b0b0b0; font-family: sans-serif; text-decoration:none; color: #4c4c4c; border: solid;"  href='javascript:ClearRoute();'>&nbsp; Clear Route &nbsp;</a>
+                                    </div>
+                                    <div id='route-segment' style='font-family: sans-serif;color:#3f3f3f;'>
+                                    </div>
+                                    <input id="show-step" type='button' value='Show Steps' onclick='javascript:showStep();' style="position: absolute;"/>
+                                    <input id='hide-step' type='button' value='Hide Steps' onclick='javascript:hideStep();' style="visibility: hidden;"/>
+                                    <div id='DetailsPanel' style='font-family: sans-serif;color:#3f3f3f; visibility: hidden'>
+                                    </div>
+                                </div>
+                                <div id="route-info">
+                                </div>
+                            </div>
+                            <!--End of route-->
+
+                            <!--Camera-->
+                            <div id="tab3" class="tab">
+                                <f:view>
+                                    <h:form>
+                                        <h4 style="background-color:#e0ffaf; font-family: sans-serif;" align="left"><img  src="image/CameraSpeed.jpg">  </img>Radar List</h4>
+                                        <h:dataTable value="#{index.radarList}" var="item">
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Street name"/>
+                                                </f:facet>
+                                                <a href="javascript:focusOnMarker('#{item.location}')">
+                                                    <img src="image/CameraSpeed.jpg"/>
+                                                    <h:outputText value="#{item.streetId.name} #{item.streetId.typeId.type} "/></a>
+                                            </h:column>
+
+                                        </h:dataTable>
+                                    </h:form>
+                                </f:view>
+                            </div>
+                            <!--End of Camera-->
+                            <!-- Legend-->
+                            <div id="tab4" class="tab">
+                                <div align="center">
+                                    <h4 style="background-color:#e0ffaf; font-family: sans-serif;" align="left">Legend</h4>
+                                    <div style="width: 200px; box-shadow:1px 1px 1px #888888; border-color: #e0ffaf " align="center">
+                                        <table border="0" class="Legend">
+                                            <tr>
+                                                <td><img src="image/stationarytraffic.png" align="middle" width="30px" height="30px"/></td>
+                                                <td style='color:#3f3f3f;'>Stationary traffic</td>
+                                            </tr>
+                                            <tr>
+                                                <td><img src="image/queuingTraffic.png" align="middle" width="30px" height="30px"/></td>
+                                                <td style='color:#3f3f3f;'>Queuing traffic</td>
+                                            </tr>
+                                            <tr>
+                                                <td><img src="image/SlowTraffic.png" align="middle" width="30px" height="30px"/></td>
+                                                <td style='color:#3f3f3f;'>Slow traffic</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="30px" height="30px"><img src="image/CameraSpeed.jpg" align="center"/></td>
+                                                <td style='color:#3f3f3f;'>Speed Camera</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="30px" height="30px"><img src="image/roadworkIcon.jpg"></img></td>
+                                                <td style='color:#3f3f3f;'>Roadworks</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="30px" height="30px"><img src="image/CarAccidentIcon.jpg"></img></td>
+                                                <td style='color:#4c4c4c;'>Accident</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="30px" height="30px"><img src="image/start.png"></img></td>
+                                                <td style='color:#4c4c4c;'>Start</td>
+                                            </tr>
+                                            <tr>
+                                                <td width="30px" height="30px"><img src="image/end.png"></img></td>
+                                                <td style='color:#4c4c4c;'>Destination</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--End of Legend-->
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+
+        </div>
+        <div id="map-canvas">         
+        </div>
+    </h:body>
+</html>

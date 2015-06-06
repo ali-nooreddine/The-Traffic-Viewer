@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>All Reported Radar</title>
+        <link rel= "stylesheet" type="text/css" href="style/datatablestyle.css"></link>
+    </h:head>
+    <h:body>
+        <f:view>
+
+            
+            <h:form>
+                <h1><h:outputText value="List"/></h1>
+                <h:dataTable value="#{reportedradar.reportedRadarlist}" var="item">
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Street Name"/>
+                        </f:facet>
+                        <h:outputText value="#{item.streetId}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Location"/>
+                        </f:facet>
+                        <h:outputText value="#{item.location}"/>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="UserId"/>
+                        </f:facet>
+                        <h:outputText value="#{item.userId}"/>
+                    </h:column>
+                    <h:column>
+                        <h:commandButton value="Remove" image="image/delete-icon.png" >
+                            <f:ajax event="click" execute="@form" render="@form" listener="#{reportedradar.remove(item)}"/>
+                        </h:commandButton>
+                        <h:commandButton value="Add" image="image/delete-icon.png" >
+                            <f:ajax event="click" execute="@form" render="@form" listener="#{reportedradar.add(item)}"/>
+                        </h:commandButton>
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </f:view>
+
+    </h:body>
+</html>
+

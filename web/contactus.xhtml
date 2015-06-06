@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+                               <h:form class="form" id="form" styleClass="form" >
+                       
+                        <img id="close" src="image/down_button.png" onclick ="div_hide()"/>
+                        <h2>Contact Us</h2>
+                        <hr/>
+                        <label>Name: <span>*</span></label>
+                        <h:inputText styleClass="name" id="name" p:placeholder="Name" value="#{contactus.name}"
+                                     required="true" requiredMessage="Name is required"/><br/>
+                        <h:message id="mName" for="name" style="color: red"/><br/>
+                        <label>Email: <span>*</span></label>
+                        <h:inputText styleClass="email" id="email" p:placeholder="Email" value="#{contactus.eMail}"
+                                     required="true" requiredMessage="Email is required"
+                                     validatorMessage="Email is not valid">
+                            <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+                        </h:inputText><br/>
+                        <h:message id="mEmail" for="email" style="color: red"/><br/>
+                        <label>Contact No: <span>*</span></label>
+                        <h:inputText styleClass="phone" id="contactno" p:placeholder="10 digit Mobile no." value="#{contactus.phNum}"
+                                     required="true" requiredMessage="Phone Number is required" validatorMessage="Phone number is not valid" >
+                            <f:validateRegex pattern="^(\\+\\d\\d )?\\(\\d{2,3}\\) \\d{8}$"/>
+                        </h:inputText>
+                        <br/>
+                        <h:message id="mContact" for="contactno" style="color: red"/><br/>
+                        <label>Message:</label>
+                        <h:inputTextarea styleClass="textarea" id="message" p:placeholder="Message......."  value="#{contactus.msg}"
+                                         required="true" requiredMessage="Message is required"/><br/>
+                        <h:message id="mMessage" for="message" style="color: red"/>
+                        <h:commandLink styleClass="submit" id="send" value="Send" action="#{contactus.insert()}">
+<!--                            <f:ajax event="click" execute="@this" render="@this" listener="" />-->
+                             <f:ajax execute="@form" render="@none" />
+                        </h:commandLink>
+                    </h:form>
+               
+ </h:body>
+</html>
+
