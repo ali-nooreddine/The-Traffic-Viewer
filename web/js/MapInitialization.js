@@ -30,9 +30,9 @@ function initialize() {
     map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
     directionsDisplay.setPanel(document.getElementById('directions-panel'));
     google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {
-        //  computeTotalDistance(directionsDisplay.getDirections());
         computeJams(directionsDisplay.getDirections(), window.traf);
     });
+
     stepDisplay = new google.maps.InfoWindow();
     var styles = [{featureType: "road.highway", stylers: [{color: "#b7b7b7"}]}];
     map.setOptions({styles: styles});
@@ -97,14 +97,12 @@ function reset() {
     traf = [];
     for (var i = 0; i < road.length; i++) {
         road[i].setMap(null);
-        marker[i].setMap(null);
+    }
+        for (var j = 0; j < marker.length; j++) {
+        marker[j].setMap(null);
     }
 }
 function showStreetinfo(traf) {
-    // document.getElementById('routing').style.visibility='hidden';
-    // document.getElementById('route-info').style.visibility='visible';
-    // document.getElementById('route-info').style.position='static';
-    // document.getElementById("routing").style.position='absolute'; 
     streetInfo(traf);
 }
 
@@ -173,14 +171,19 @@ function calcRoute() {
         optimizeWaypoints: true,
         durationInTraffic: true
     };
+    console.log(request);
     directionsService.route(request, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
+            console.log(status);   
+            console.log(response.routes[0].legs[0]);
             directionsDisplay.setDirections(response);
+            console.log(status); 
             directionsDisplay.setMap(map);
             showSteps(response);
         }
     });
 }
+
 function ClearRoute() {
     directionsDisplay.setMap(null);
     for (var i = 0; i < markerArray.length; i++) {
@@ -193,14 +196,16 @@ function ClearRoute() {
 }
 function CalReverseRoute() {
     hideStep();
-
     var request;
     var count = 1;
     var start = document.getElementById('start').value;
     var end = document.getElementById('end').value;
+    
     for (var i = 0; i < markerArray.length; i++) {
         markerArray[i].setMap(null);
     }
+    
+
     request = {
         origin: end,
         destination: start,
@@ -221,6 +226,7 @@ function CalReverseRoute() {
     request = null;
 }
 function showSteps(directionResult) {
+    console.log(directionResult.toString());
     var myRoute = directionResult.routes[0].legs[0];
     var marker = new google.maps.Marker({
         position: myRoute.steps[0].start_point,
@@ -265,6 +271,7 @@ function computeJams(result, traf) {
     var jamsPathPolyline = [];
     var jamsLong = 0;
     var jamsArrDuration = [];
+    var jamsArrTotalDuration=[];
     var distanceOfJamsArr = [];
     var distanceOfJams = 0;
     var dist = [];
@@ -317,10 +324,10 @@ function computeJams(result, traf) {
         
         jamsTime = Math.round(jamsTime);
         // here i should add the time that depend on the distance of a route
-        routess.legs[p].duration;
-                time = Math.floor(routess.legs[f].duration.value / 60) + jamsArrDuration[k];
-        //jamsArrTotalDuration[f] = jamsTime + time;
-        jamsArrDuration[f] = jamsTime + time;;
+        //time = Math.floor(routess.legs[0].duration.value / 60);
+        time = jamsTime + (result.routes[f].legs[0].duration.value / 60); 
+        jamsArrTotalDuration[f] = jamsTime + time;
+        jamsArrDuration[f] = jamsTime// + time;// + time;;
     }
     
     var summaryPanel = document.getElementById("route-segment");
@@ -334,8 +341,8 @@ function computeJams(result, traf) {
     document.getElementById('DetailsPanel').style.visibility = 'hidden';
     summaryPanel.innerHTML = "";
 
-    var bestRoute = Math.min.apply(Math, jamsArrDuration);
-    var indexOfbestroute = jamsArrDuration.indexOf(bestRoute);
+    var bestRoute = Math.min.apply(Math, jamsArrTotalDuration);
+    var indexOfbestroute = jamsArrTotalDuration.indexOf(bestRoute);
     summaryPanel.innerHTML += "<p style='color:#3f3f3f;font-size: 11px'>Green segment is the best Route</p>";
     for (var k = 0; k < result.routes.length; k++) {
         var routeSegment = k + 1;

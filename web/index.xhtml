@@ -13,50 +13,72 @@
         </script>
         <script type="text/javascript" src="js/MapInitialization.js">
         </script>
-        <link rel="stylesheet" href="style/jquery_popup.css" />
+
+        <link rel="stylesheet" href="style/jquery_popup.css"></link>
+        <link rel="stylesheet" href="style/base.min.css" ></link>
         <script type="text/javascript" src="js/popupwindow.js"></script>
 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <!-- jQuery for google plus API -->
-          <script type="text/javascript">
-  (function() {
-    var po = document.createElement('script');
-    po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://plus.google.com/js/client:plusone.js';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(po, s);
-  })();
-  
-function onSignInCallback(authResult) {
-    alert(authResult);
-  if (authResult['status']['signed_in']) {
-    // Update the app to reflect a signed in user
-    // Hide the sign-in button now that the user is authorized, for example:
-    document.getElementById('signinButton').setAttribute('style', 'display: none');
-  } else {
-    // Update the app to reflect a signed out user
-    // Possible error values:
-    //   "user_signed_out" - User is signed-out
-    //   "access_denied" - User denied access to your app
-    //   "immediate_failed" - Could not automatically log in the user
-    console.log('Sign-in state: ' + authResult['error']);
-  }
-}
-          
-          </script>
-        
+        <script type="text/javascript">
+                    (function() {
+                        var po = document.createElement('script');
+                        po.type = 'text/javascript';
+                        po.async = true;
+                        po.src = 'https://plus.google.com/js/client:plusone.js';
+                        var s = document.getElementsByTagName('script')[0];
+                        s.parentNode.insertBefore(po, s);
+                    })();
+
+                    function onSignInCallback(resp) {
+                        gapi.client.load('plus', 'v1', apiClientLoaded);
+                    }
+                    function apiClientLoaded() {
+                        gapi.client.plus.people.get({userId: 'me'}).execute(handleEmailResponse);
+                    }
+
+                    function handleEmailResponse(resp) {
+                        primaryEmail = null;
+                        gender = resp.gender;
+                        iconURL = resp.image.url;
+                        profileURL = resp.url;
+                        displayName = resp.displayName;
+
+                        for (var i = 0; i &lt; resp.emails.lenght; i++) {
+                            if (resp.emails[i].type === 'account')
+                                primaryEmail = resp.emails[i].value;
+                        }
+
+//                        #{index.displayName} = displayName;
+//                        #{index.email} = primaryEmail;
+//                        #{index.displayName} = iconURL;
+//                        #{index.gender} = gender;
+//                        #{index.profileURL} = profileURL;
+                        #{index.insertUserInfo(displayName,primaryEmail,gender,iconURL,profileURL)}
+                        window.document.getElementById(formName+'xp-displayName').value = displayName;
+                        window.document.getElementById(formName+'xp-email').value = primaryEmail;
+                        console.log(displayName);
+                        window.document.getElementById(formName+'xp-userIconURL').value = iconURL;
+                        window.document.getElementById(formName+'xp-gender').value = gender;
+                        window.document.getElementById(formName+'xp-profileURL').value = profileURL;
+                        window.document.getElementById(formName+"buttonName").click();
+                        //window.document.getElementById("buttonName").click();
+                        //document.getElementById('responseContainer').value = 'Primary email: ' +
+                        //primaryEmail + '\n\nFull Response:\n' + JSON.stringify(resp);
+                    }
+        </script>
         <script>
-                    jQuery(document).ready(function() {
-                        jQuery('.tabs .tab-links a').on('click', function(e) {
-                            var currentAttrValue = jQuery(this).attr('href');
-                            // Show/Hide Tabs
-                            jQuery('.tabs ' + currentAttrValue).show().siblings().hide();
-                            // Change/remove current tab to active
-                            jQuery(this).parent('li').addClass('active').siblings().removeClass('active');
-                            e.preventDefault();
-                        });
-                    });
-        </script> 
+            jQuery(document).ready(function() {
+                jQuery('.tabs .tab-links a').on('click', function(e) {
+                    var currentAttrValue = jQuery(this).attr('href');
+                    // Show/Hide Tabs
+                    jQuery('.tabs ' + currentAttrValue).show().siblings().hide();
+                    // Change/remove current tab to active
+                    jQuery(this).parent('li').addClass('active').siblings().removeClass('active');
+                    e.preventDefault();
+                });
+            });
+        </script>    
         <script>
             $("#contactUs").click(function() {
                 $("#contactdiv").css("display", "block");
@@ -70,8 +92,12 @@ function onSignInCallback(authResult) {
                 document.getElementById("contactdiv").style.display = "hidden";
             }</script>
     </h:head>
-
     <script type="text/javascript">
+        var primaryEmail = null;
+        var gender = null;
+        var iconURL = null;
+        var profileURL = null;
+        var displayName = null;
         var color = [];
         var colorMorn = [];
         var colorEven = [];
@@ -155,35 +181,42 @@ function onSignInCallback(authResult) {
 
         <div id="mainform">
             <div>
+                <header class="header" id="main_header">
+                    <ul class="nav nav-list pull-left">
+                        <li>
+                            <a data-toggle="menu" href="#menu">
+                                <span class="access-hide">Menu</span>
+                                <span class="icon icon-menu icon-lg"></span>
+                            </a>
+                        </li>
+                    </ul>
+                    <a class="header-logo" href="index.xhtml">The Traffic Viewer</a>
+                    <ul class="nav nav-list pull-right">
+                        <li id="logged_in_user">
+                            <a data-toggle="menu" href="#profile">
+                                <span class="access-hide">John Smith</span>
+                                <span class="avatar avatar-sm"><img src=""/></span>
+                            </a>
+                        </li>
+                        <li id="not_loged_in">
+                            <div id="gConnect" class="button">
+                                <button class="g-signin"
+                                        data-scope="email"
+                                        data-clientid="935999459796-7ncorn3dt1bjdlir0q6bi6t9q1mc6m18.apps.googleusercontent.com"
+                                        data-callback="onSignInCallback"
+                                        data-theme="dark"
+                                        data-cookiepolicy="single_host_origin">
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </header>
 
-                <table id="menu-bar">
-                    <tr>
-                        <td align="center" style="font-family: sans-serif;"><a href="index.xhtml" title="The Traffic Viewer"></a>
-                        
-                        </td>
-                        <td align="center" style="font-family: sans-serif;">
-                            <a href="reportradar.xhtml">   <button id="reportRadar" style="margin-left: 900px;">Report Radar</button></a>
-                            <button id="popup" style="margin-left: 900px;" onclick="div_show()">Contact Us</button>
-                        </td>
-                    </tr>
-
-                </table>
-<div id="gConnect">
-    <button id="signinButton" 
-        class="g-signin"
-        data-scope="https://www.googleapis.com/auth/plus.login"
-        data-requestvisibleactions="http://schemas.google.com/AddActivity"
-        data-clientId="935999459796-7ncorn3dt1bjdlir0q6bi6t9q1mc6m18.apps.googleusercontent.com"
-        data-accesstype="offline"
-        data-callback="onSignInCallback"
-        data-cookiepolicy="single_host_origin">
-    </button>
-  </div>
-   <div id="authOps" style="display:none">
-    <h2>Authentication Logs</h2>
-    <pre id="authResult"></pre>
-    <pre id="tokenResult"></pre>
-  </div>
+                <div id="authOps" style="display:none">
+                    <h2>Authentication Logs</h2>
+                    <pre id="authResult"></pre>
+                    <pre id="tokenResult"></pre>
+                </div>
             </div>
             <!-- Popup Div Starts Here -->
             <div id="abc" class="abc">
@@ -222,7 +255,7 @@ function onSignInCallback(authResult) {
                 </div>
             </div>
             <!-- Popup Div Ends Here -->
-            
+
 
             <div id="box">
                 <div id="control">      
@@ -267,17 +300,16 @@ function onSignInCallback(authResult) {
                 </div>
             </div>
             <div style="float: left;">
-<!--                <div id="route-information">
-                </div>-->
+                <!--                <div id="route-information">
+                                </div>-->
                 <div style="overflow: hidden">
                     <div class="tabs">
                         <ul class="tab-links">
-                            <li class="active" id="Incident"><a onclick="reset();
-                            DrawPolyline(noTraf)">No traffic</a></li>
+                            <li class="active" id="Incident"><a onclick="reset();">No traffic</a></li>
                             <li  id='suggested-route' onclick=""><a onclick="reset();
-                            DrawPolyline(trafmid)">Low traffic</a></li>
+                                    DrawPolyline(trafmid)">Low traffic</a></li>
                             <li><a onclick="reset();
-                            DrawPolyline(trafFull)">Full traffic</a></li>
+                                    DrawPolyline(trafFull)">Full traffic</a></li>
                         </ul>
                         <ul class="tab-links">
                             <li class="active" id="Incident"><a href="#tab1">Incident</a></li>
@@ -285,7 +317,7 @@ function onSignInCallback(authResult) {
                             <li><a href="#tab3">Radar list</a></li>
                             <li><a href="#tab4">Legend</a></li>
                         </ul>
-                       
+
                         <div class="tab-content">
                             <!--      Incident        -->
                             <div id="tab1" class="tab active">
@@ -350,8 +382,7 @@ function onSignInCallback(authResult) {
                                     </h:form>
                                 </f:view>
                             </div>
-                            <!--End of Camera-->
-                            <!-- Legend-->
+
                             <div id="tab4" class="tab">
                                 <div align="center">
                                     <h4 style="background-color:#e0ffaf; font-family: sans-serif;" align="left">Legend</h4>
@@ -393,7 +424,6 @@ function onSignInCallback(authResult) {
                                     </div>
                                 </div>
                             </div>
-                            <!--End of Legend-->
                         </div>
                     </div>
                 </div> 
@@ -402,6 +432,39 @@ function onSignInCallback(authResult) {
         </div>
         <div id="map-canvas">         
         </div>
+        <div class="fbtn-container">
+            <div class="fbtn-inner">
+                <a class="fbtn fbtn-red fbtn-lg" data-toggle="dropdown">
+                    <span class="fbtn-text">Links</span>
+                    <span class="fbtn-ori icon icon-open-in-new"></span>
+                    <span class="fbtn-sub icon icon-close"></span>
+                </a>
+                <div class="fbtn-dropdown">
+                    <a class="fbtn" href="#" target="_blank">
+                        <span class="fbtn-text">Send Message</span>
+                        <img src="image/send-message.png"/>
+                    </a>
+                    <a class="fbtn fbtn-blue" href="https://twitter.com/daemonites" target="_blank">
+                        <span class="fbtn-text">Report a Radar</span>
+                        <span class="fa fa-twitter">
+                            <img src="image/report_camera.png"/>
+                        </span>
+                    </a>
+                    <a class="fbtn fbtn-alt" href="http://www.daemon.com.au/" target="_blank">
+                        <span class="fbtn-text">Report an Incident</span>
+                        <span class="fa fa-link">
+                            <img src="image/report-incident.png"/>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <script src="js/base.min.js"/>
+        <h:inputHidden id="xp-displayName"/>
+        <h:inputHidden id="xp-email"/>
+        <h:inputHidden id="xp-gender"/>
+        <h:inputHidden id="xp-profileURL"/>
+        <h:inputHidden id="xp-userIconURL"/>
+        <h:commandButton id="buttonName" style="display:none" onclick="#{index.insertUserInfo()}"/>
     </h:body>
-    
 </html>

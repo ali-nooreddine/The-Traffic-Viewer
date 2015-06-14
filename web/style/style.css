@@ -233,6 +233,9 @@ body { height: 100%; margin: 0; padding: 0;
         margin: 0;
     }
 }
+#mainform{
+    margin-bottom: 70px;
+}
 #legend.td{
     alignment-adjust: central;
 }
@@ -315,7 +318,7 @@ li.active a, li.active a:hover {
     box-shadow:-1px 1px 1px rgba(0,0,0,0.15);
     background:#F7F7F7;
     font-family: sans-serif;
-    margin:1px 20px 1px 20px ;
+    margin:1px 20px 1px 50px ;
     border : 10px solid #D6D6D6;
     overflow: scroll; overflow-x:hidden;
     height: 500px;
